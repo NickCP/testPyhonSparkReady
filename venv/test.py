@@ -57,6 +57,7 @@ df3.withColumn("new age", regexp_replace(col("Age"), "48", "20")).show()
 print("- - - - -- - -  -- - - - -- - ")
 # load data from txt file
 df4 = sc.textFile("C://Users/mchub/Desktop/fie.txt")
+csvDf =sql.read.csv("C://Users/mchub/Desktop/file.csv", header=True, inferSchema=True)
 listt = df4.collect()
 for i in listt:
     print(i)
@@ -67,7 +68,7 @@ print("Dataset 5:")
 df5.show()
 print("Dataset 3:")
 df3.show()
-print("Exveption:")
+print("Exceptions:")
 df3.exceptAll(df5).show()
 
 
@@ -77,17 +78,23 @@ tb = df5.alias("tb")
 inner_join = ta.join(tb, ta.age == tb.age)
 inner_join.show()
 print("__________LEFT JOIN_________")
-
 left_join = ta.join(tb, ta.age == tb.age, how='left')
 left_join.show()
 print("____________WITH FILTER__________#1")
 left_join.filter(col('tb.name').isNull()).show()
 print("____________WITH FILTER__________#2")
 left_join.filter(col('tb.name').isNotNull()).show()
+
+print("_______LOWER_______")
+df3.withColumn("lower", lower(col("Name"))).show()
+
+print("______ TEST CSVDF_________")
+csvDf.show()
+print(csvDf.schema)
+
+
 # withColumn - add new column with changes
+
 # orderBy("age", ascending = False) - sort
 #
-#
-#
-#
-#
+
