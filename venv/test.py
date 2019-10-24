@@ -99,3 +99,12 @@ csvDf.printSchema()
 # orderBy("age", ascending = False) - sort
 #
 
+# !!!!!!!!!! LOOK LIKE THIS!!!!!!!!!!!
+#______ TEST CSVDF_________
+#+-------------------+
+#|First;Second;Third;|
+#+-------------------+
+#|             1;1;2;|
+#|             2;2;3;|
+#|             2;3;1;|
+#+-------------------+
