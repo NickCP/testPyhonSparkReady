@@ -88,13 +88,14 @@ left_join.filter(col('tb.name').isNotNull()).show()
 print("_______LOWER_______")
 df3.withColumn("lower", lower(col("Name"))).show()
 
+# Bad idea, it doesn`t work :(
 print("______ TEST CSVDF_________")
 csvDf.show()
-print(csvDf.schema)
+csvDf.printSchema()
 
 
 # withColumn - add new column with changes
-
+#
 # orderBy("age", ascending = False) - sort
 #
 
