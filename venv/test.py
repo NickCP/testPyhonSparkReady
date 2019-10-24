@@ -15,6 +15,7 @@ department2 = Row(id='789012', name='Mechanical Engineering')
 department3 = Row(id='345678', name='Theater and Drama')
 department4 = Row(id='901234', name='Indoor Recreation')
 
+
 # Create the Employees
 Employee = Row("firstName", "lastName", "email", "salary")
 employee1 = Employee('michael', 'armbrust', 'no-reply@berkeley.edu', 100000)
@@ -47,18 +48,21 @@ df3 = sql.createDataFrame([("48","Nick    ",), ("20","Roman     ",), ("18","Mart
 df5 =sql.createDataFrame([("48","Nick    ",), ("20","Roman     ",), ("19","Marta  ",), ("25","Nastya  ",), ("34","Petrenko",)], ["age", "Name"])
 
 # sorting dataframes with adding new column
+print("___SORTED ASCENDING=FALSE_______")
 df3.orderBy("age", ascending=False).show()
+print("______ADD COLUMN WITH CHANGES________")
 df3.withColumn("New name",trim(col("Name"))).show()
-print("- - - - -- - -  -- - - - -- - ")
+print("________ RENAME VALUES_________")
 df3.withColumn("new name", regexp_replace(col("Name"), "Nick", "Kolya")).show()
 # change value 48 on 20 in column AGE
-print("- - - - -- - -  -- - - - -- - ")
+print("_________ RENAME AGE ___________")
 df3.withColumn("new age", regexp_replace(col("Age"), "48", "20")).show()
-print("- - - - -- - -  -- - - - -- - ")
+print("_________ PRINT TEXT FROM TXT ____________")
 # load data from txt file
 df4 = sc.textFile("C://Users/mchub/Desktop/fie.txt")
 csvDf =sql.read.csv("C://Users/mchub/Desktop/file.csv", header=True, inferSchema=True)
 listt = df4.collect()
+
 for i in listt:
     print(i)
 print("------------")
