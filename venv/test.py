@@ -8,6 +8,7 @@ conf = SparkConf().set('spark.driver.host', '127.0.0.1')
 sc = SparkContext("local", "App Name", conf=conf)
 sql = SQLContext(sc)
 
+
 # Create Example Data - Departments and Employees
 
 # Create the Departments
@@ -102,6 +103,8 @@ csvDf.printSchema()
 number_list = [i for i in range(1, 900)]
 time_list = [i for i in range(1, 1800, 2)]
 # random string
+
+
 def randomword(length):
    letters = string.ascii_lowercase
    return ''.join(random.choice(letters) for i in range(length))
@@ -109,11 +112,19 @@ def randomword(length):
 
 word_list = [randomword(5) for i in range(1, 900)]
 
-# new dataframe with values from listK
+
+# new dataframe with values from lists
 big_df = sql.createDataFrame(zip(number_list, time_list, word_list), ["id", "Time", "Name"])
 number_of_rows = big_df.count()
 big_df.show(number_of_rows)
-
+new_big_df = big_df.withColumn("Upper name", upper(col("Name")))
+new_big_df.show(number_of_rows)
+try:
+    new_big_df.write.option("header", "true").csv("C://Users/mchub/Desktop/bigdf.csv")
+except:
+    print("Oooops, error")
+else:
+    print("Success! File is saving on desktop. Path: C://Users/mchub/Desktop/bigdf.csv")
 
 # withColumn - add new column with changes
 #
