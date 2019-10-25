@@ -2,9 +2,10 @@ from pyspark import SparkConf, SparkContext
 from pyspark.sql import *
 from pyspark.sql.types import StructType
 from pyspark.sql.functions import *
+import random, string
 
-conf = SparkConf().set('spark.driver.host','127.0.0.1')
-sc = SparkContext("local", "App Name",conf = conf)
+conf = SparkConf().set('spark.driver.host', '127.0.0.1')
+sc = SparkContext("local", "App Name", conf=conf)
 sql = SQLContext(sc)
 
 # Create Example Data - Departments and Employees
@@ -41,17 +42,17 @@ df1.show(4)
 departmentsWithEmployeesSeq2 = [departmentWithEmployees3, departmentWithEmployees4]
 df2 = sql.createDataFrame(departmentsWithEmployeesSeq2)
 
-df2.show(4, truncate= True)
+df2.show(4, truncate=True)
 
 # my own dataframes
-df3 = sql.createDataFrame([("48","Nick    ",), ("20","Roman     ",), ("18","Marta  ",), ("23","Nastya  ",), ("34"," ",)], ["age", "Name"])
-df5 =sql.createDataFrame([("48","Nick    ",), ("20","Roman     ",), ("19","Marta  ",), ("25","Nastya  ",), ("34","Petrenko",)], ["age", "Name"])
+df3 = sql.createDataFrame([("48", "Nick    ",), ("20", "Roman     ",), ("18", "Marta  ",), ("23", "Nastya  ",), ("34"," ",)], ["age", "Name"])
+df5 =sql.createDataFrame([("48", "Nick    ",), ("20", "Roman     ",), ("19", "Marta  ",), ("25", "Nastya  ",), ("34", "Petrenko",)], ["age", "Name"])
 
 # sorting dataframes with adding new column
 print("___SORTED ASCENDING=FALSE_______")
 df3.orderBy("age", ascending=False).show()
 print("______ADD COLUMN WITH CHANGES________")
-df3.withColumn("New name",trim(col("Name"))).show()
+df3.withColumn("New name", trim(col("Name"))).show()
 print("________ RENAME VALUES_________")
 df3.withColumn("new name", regexp_replace(col("Name"), "Nick", "Kolya")).show()
 # change value 48 on 20 in column AGE
@@ -98,14 +99,21 @@ csvDf.show()
 csvDf.printSchema()
 
 # lists of values to add in dataframe
-l = [i for i in range(1,900)]
-l_time = [i for i in range(1,1800,2)]
+number_list = [i for i in range(1, 900)]
+time_list = [i for i in range(1, 1800, 2)]
+# random string
+def randomword(length):
+   letters = string.ascii_lowercase
+   return ''.join(random.choice(letters) for i in range(length))
 
+
+word_list = [randomword(5) for i in range(1, 900)]
 
 # new dataframe with values from listK
-big_df = sql.createDataFrame(zip(l, l_time), ["id", "time"])
+big_df = sql.createDataFrame(zip(number_list, time_list, word_list), ["id", "Time", "Name"])
 number_of_rows = big_df.count()
 big_df.show(number_of_rows)
+
 
 # withColumn - add new column with changes
 #
@@ -113,4 +121,4 @@ big_df.show(number_of_rows)
 #
 # to add some lists in dataframe - use function zip!
 # * - unpack operator
-# list(set(l).intersection(l_time)) extract elements of two lists
+# list(set(number_list).intersection(time_list)) extract elements of two lists
