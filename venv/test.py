@@ -45,7 +45,7 @@ df2.show(4, truncate=True)
 
 # my own dataframes
 df3 = sql.createDataFrame(
-    [("48", "Nick    ",), ("20", "Roman     ",), ("18", "Marta  ",), ("23", "Nastya  ",), ("34", " ",)],
+    [("48", "Nick    ",), ("20", "Roman     ",), ("18", "Marta  ",), ("23", "Nastya  ",), ("34", None,)],
     ["age", "Name"])
 df5 = sql.createDataFrame(
     [("48", "Nick    ",), ("20", "Roman     ",), ("19", "Marta  ",), ("25", "Nastya  ",), ("34", "Petrenko",)],
@@ -54,6 +54,8 @@ df5 = sql.createDataFrame(
 # sorting dataframes with adding new column
 print("___SORTED ASCENDING=FALSE_______")
 df3.orderBy("age", ascending=False).show()
+print("___FILL EMPTY VALUES___")
+df3.na.fill("Not empty").show()
 print("______ADD COLUMN WITH CHANGES________")
 df3.withColumn("New name", trim(col("Name"))).show()
 print("________ RENAME VALUES_________")
