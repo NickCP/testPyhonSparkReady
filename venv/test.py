@@ -138,6 +138,8 @@ df3.drop(col("Name")).show()
 df3.show()
 
 
+# Statistical and Mathematical Functions
+new_big_df.describe('id', 'Time').show()
 # withColumn - add new column with changes
 #
 # orderBy("age", ascending = False) - sort
