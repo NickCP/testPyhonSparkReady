@@ -8,7 +8,6 @@ conf = SparkConf().set('spark.driver.host', '127.0.0.1')
 sc = SparkContext("local", "App Name", conf=conf)
 sql = SQLContext(sc)
 
-
 # Create Example Data - Departments and Employees
 
 # Create the Departments
@@ -16,7 +15,6 @@ department1 = Row(id='123456', name='Computer Science')
 department2 = Row(id='789012', name='Mechanical Engineering')
 department3 = Row(id='345678', name='Theater and Drama')
 department4 = Row(id='901234', name='Indoor Recreation')
-
 
 # Create the Employees
 Employee = Row("firstName", "lastName", "email", "salary")
@@ -46,8 +44,12 @@ df2 = sql.createDataFrame(departmentsWithEmployeesSeq2)
 df2.show(4, truncate=True)
 
 # my own dataframes
-df3 = sql.createDataFrame([("48", "Nick    ",), ("20", "Roman     ",), ("18", "Marta  ",), ("23", "Nastya  ",), ("34"," ",)], ["age", "Name"])
-df5 =sql.createDataFrame([("48", "Nick    ",), ("20", "Roman     ",), ("19", "Marta  ",), ("25", "Nastya  ",), ("34", "Petrenko",)], ["age", "Name"])
+df3 = sql.createDataFrame(
+    [("48", "Nick    ",), ("20", "Roman     ",), ("18", "Marta  ",), ("23", "Nastya  ",), ("34", " ",)],
+    ["age", "Name"])
+df5 = sql.createDataFrame(
+    [("48", "Nick    ",), ("20", "Roman     ",), ("19", "Marta  ",), ("25", "Nastya  ",), ("34", "Petrenko",)],
+    ["age", "Name"])
 
 # sorting dataframes with adding new column
 print("___SORTED ASCENDING=FALSE_______")
@@ -57,7 +59,7 @@ df3.withColumn("New name", trim(col("Name"))).show()
 print("________ RENAME VALUES_________")
 df3.withColumn("new name", regexp_replace(col("Name"), "Nick", "Kolya")).show()
 # change value 48 on 20 in column AGE
-print("_________ RENAME AGE ___________")
+print("_________CHANGE AGE ___________")
 df3.withColumn("new age", regexp_replace(col("Age"), "48", "20")).show()
 print("_________ PRINT TEXT FROM TXT ____________")
 # load data from txt file
@@ -80,7 +82,6 @@ df3.show()
 print("Exceptions:")
 df3.exceptAll(df5).show()
 
-
 # I join two tables
 ta = df3.alias("ta")
 tb = df5.alias("tb")
@@ -98,28 +99,30 @@ print("_______LOWER_______")
 df3.withColumn("lower", lower(col("Name"))).show()
 
 # Bad idea, it doesn`t work :(
-print("______ TEST CSVDF_________")
+print("______TEST CSVDF_________")
 csvDf.show()
 csvDf.printSchema()
 
 # lists of values to add in dataframe
 number_list = [i for i in range(1, 900)]
 time_list = [i for i in range(1, 1800, 2)]
+
+
 # random string
 
 
 def randomword(length):
-   letters = string.ascii_lowercase
-   return ''.join(random.choice(letters) for i in range(length))
+    letters = string.ascii_lowercase
+    return ''.join(random.choice(letters) for i in range(length))
 
 
 word_list = [randomword(5) for i in range(1, 900)]
 # new dataframe with values from lists
 big_df = sql.createDataFrame(zip(number_list, time_list, word_list), ["id", "Time", "Name"])
 number_of_rows = big_df.count()
-big_df.show(number_of_rows-700)
+big_df.show(number_of_rows - 700)
 new_big_df = big_df.withColumn("Upper name", upper(col("Name")))
-new_big_df.show(number_of_rows-700)
+new_big_df.show(number_of_rows - 700)
 try:
     print("1")
 #    new_big_df.write.option("header", "true").csv("C://Users/mchub/Desktop/bigdf.csv")
@@ -127,6 +130,11 @@ except:
     print("Oooops, error")
 else:
     print("Success! File is saving on desktop. Path: C://Users/mchub/Desktop/bigdf.csv")
+
+print("Demonstrate how DROP is working:")
+df3.drop(col("Name")).show()
+df3.show()
+
 
 # withColumn - add new column with changes
 #
