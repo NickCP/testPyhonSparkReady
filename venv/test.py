@@ -62,12 +62,15 @@ df3.withColumn("new age", regexp_replace(col("Age"), "48", "20")).show()
 print("_________ PRINT TEXT FROM TXT ____________")
 # load data from txt file
 df4 = sc.textFile("C://Users/mchub/Desktop/fie.txt")
-csvDf =sql.read.csv("C://Users/mchub/Desktop/file.csv", header=True, inferSchema=True)
+csvDf = sql.read.csv("C://Users/mchub/Desktop/file.csv", header=True, inferSchema=True)
 listt = df4.collect()
 
 for i in listt:
     print(i)
 print("------------")
+
+print("__________DELETE WHITESPACES_________")
+new_df3 = df3.withColumn("name2", trim(col("Name")))
 
 # comparison two datasets
 print("Dataset 5:")
@@ -111,16 +114,15 @@ def randomword(length):
 
 
 word_list = [randomword(5) for i in range(1, 900)]
-
-
 # new dataframe with values from lists
 big_df = sql.createDataFrame(zip(number_list, time_list, word_list), ["id", "Time", "Name"])
 number_of_rows = big_df.count()
-big_df.show(number_of_rows)
+big_df.show(number_of_rows-700)
 new_big_df = big_df.withColumn("Upper name", upper(col("Name")))
-new_big_df.show(number_of_rows)
+new_big_df.show(number_of_rows-700)
 try:
-    new_big_df.write.option("header", "true").csv("C://Users/mchub/Desktop/bigdf.csv")
+    print("1")
+#    new_big_df.write.option("header", "true").csv("C://Users/mchub/Desktop/bigdf.csv")
 except:
     print("Oooops, error")
 else:
