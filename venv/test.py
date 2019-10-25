@@ -101,24 +101,16 @@ csvDf.printSchema()
 l = [i for i in range(1,900)]
 l_time = [i for i in range(1,1800,2)]
 
+
 # new dataframe with values from listK
 big_df = sql.createDataFrame(zip(l, l_time), ["id", "time"])
 number_of_rows = big_df.count()
 big_df.show(number_of_rows)
+
 # withColumn - add new column with changes
 #
 # orderBy("age", ascending = False) - sort
 #
-
-# !!!!!!!!!! LOOK LIKE THIS!!!!!!!!!!!
-#______ TEST CSVDF_________
-#+-------------------+
-#|First;Second;Third;|
-#+-------------------+
-#|             1;1;2;|
-#|             2;2;3;|
-#|             2;3;1;|
-#+-------------------+
-
 # to add some lists in dataframe - use function zip!
-#
+# * - unpack operator
+# list(set(l).intersection(l_time)) extract elements of two lists
