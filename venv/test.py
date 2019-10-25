@@ -109,22 +109,18 @@ csvDf.printSchema()
 number_list = [i for i in range(1, 900)]
 time_list = [i for i in range(1, 1800, 2)]
 
-
 # random string
-
 
 def randomword(length):
     letters = string.ascii_lowercase
     return ''.join(random.choice(letters) for i in range(length))
-
-
 word_list = [randomword(5) for i in range(1, 900)]
 # new dataframe with values from lists
 big_df = sql.createDataFrame(zip(number_list, time_list, word_list), ["id", "Time", "Name"])
 number_of_rows = big_df.count()
 big_df.show(number_of_rows - 700)
 new_big_df = big_df.withColumn("Upper name", upper(col("Name")))
-new_big_df.show(number_of_rows - 700)
+new_big_df.orderBy("id", ascending=False).show(number_of_rows - 700)
 try:
     print("1")
 #    new_big_df.write.option("header", "true").csv("C://Users/mchub/Desktop/bigdf.csv")
@@ -132,14 +128,19 @@ except:
     print("Oooops, error")
 else:
     print("Success! File is saving on desktop. Path: C://Users/mchub/Desktop/bigdf.csv")
-
 print("Demonstrate how DROP is working:")
 df3.drop(col("Name")).show()
-df3.show()
-
-
+print("____ MAX VALUE IN COLUMN____")
+max_value = new_big_df.agg({"Time": "max"}).collect()[0]
+print(max_value)
 # Statistical and Mathematical Functions
-new_big_df.describe('id', 'Time').show()
+new_big_df.describe('id', 'Time', 'Name').show()
+
+new_big_df.orderBy("Name", ascending=False).show(30)
+
+print("______SHOW ONLY UNIQUE VALUES______")
+new_big_df.distinct().show(200)
+
 # withColumn - add new column with changes
 #
 # orderBy("age", ascending = False) - sort
@@ -147,3 +148,4 @@ new_big_df.describe('id', 'Time').show()
 # to add some lists in dataframe - use function zip!
 # * - unpack operator
 # list(set(number_list).intersection(time_list)) extract elements of two lists
+# Use .agg for functions: max, min, sum
