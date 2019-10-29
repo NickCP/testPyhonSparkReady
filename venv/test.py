@@ -152,7 +152,14 @@ for i in z.collect():
     print(i[0], [v for v in i[1]])  # 1
 
 
+df_test = sql.createDataFrame(
+    [("20", "Nick",), ("22", "Roman",), ("22", "Marta  ",), ("18", "Nastya",), ("20", "Inna",), ("20", "Ira",), ("20", "Petya",), ("22", "Ihor",), ("18", "Petya",)],
+    ["age", "Name"])
 
+df_test_group = df_test.rdd.groupByKey().collect()
+
+for i in df_test_group:
+    print("Age: ", i[0], " | Names: ", [k for k in i[1]])
 
 # withColumn - add new column with changes
 #
