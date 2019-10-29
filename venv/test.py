@@ -45,7 +45,7 @@ df2.show(4, truncate=True)
 
 # my own dataframes
 df3 = sql.createDataFrame(
-    [("48", "Nick    ",), ("20", "Roman     ",), ("18", "Marta  ",), ("23", "Nastya  ",), ("34", None,)],
+    [("48", "Nick    ",), ("48", "Roman     ",), ("18", "Marta  ",), ("23", "Nastya  ",), ("34", None,)],
     ["age", "Name"])
 df5 = sql.createDataFrame(
     [("48", "Nick    ",), ("20", "Roman     ",), ("19", "Marta  ",), ("25", "Nastya  ",), ("34", "Petrenko",)],
@@ -75,6 +75,7 @@ print("------------")
 
 print("__________DELETE WHITESPACES_________")
 new_df3 = df3.withColumn("name2", trim(col("Name")))
+
 
 # comparison two datasets
 print("Dataset 5:")
@@ -136,10 +137,22 @@ print(max_value)
 # Statistical and Mathematical Functions
 new_big_df.describe('id', 'Time', 'Name').show()
 
-new_big_df.orderBy("Name", ascending=False).show(30)
+new_big_df.orderBy("Name", ascending=True).show(30)
 
 print("______SHOW ONLY UNIQUE VALUES______")
 new_big_df.distinct().show(200)
+
+
+print("Group by key demonstrate:")
+k = df3.withColumn("Name_trim", trim(col("Name")))
+k = k.drop(col("Name"))
+z = k.rdd.groupByKey()
+
+for i in z.collect():
+    print(i[0], [v for v in i[1]])  # 1
+
+
+
 
 # withColumn - add new column with changes
 #
@@ -149,3 +162,4 @@ new_big_df.distinct().show(200)
 # * - unpack operator
 # list(set(number_list).intersection(time_list)) extract elements of two lists
 # Use .agg for functions: max, min, sum
+# useful function dropDuplicates!
