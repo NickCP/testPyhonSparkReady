@@ -3,6 +3,7 @@ from pyspark.sql import *
 from pyspark.sql.types import StructType
 from pyspark.sql.functions import *
 import random, string
+from math import ceil
 
 conf = SparkConf().set('spark.driver.host', '127.0.0.1')
 sc = SparkContext("local", "App Name", conf=conf)
@@ -153,13 +154,25 @@ for i in z.collect():
 
 
 df_test = sql.createDataFrame(
-    [("20", "Nick",), ("22", "Roman",), ("22", "Marta  ",), ("18", "Nastya",), ("20", "Inna",), ("20", "Ira",), ("20", "Petya",), ("22", "Ihor",), ("18", "Petya",)],
-    ["age", "Name"])
+    [("20", "Nick", "10000"), ("22", "Roman", "7000"), ("22", "Marta", "4000"), ("18", "Nastya", "3000"), ("20", "Inna", "4000"), ("20", "Ira", "7000"), ("20", "Petya", "4000"), ("22", "Ihor", "10000"), ("18", "Zoya", "3000")],
+    ["age", "Name", "Salary per year"])
 
-df_test_group = df_test.rdd.groupByKey().collect()
+print("DF_TEST")
+df_test.show()
+df_salary = df_test.select("Salary per year", "Name").rdd.groupByKey().collect()
+df_age_salary = df_test.select("age", "Salary per year").rdd.groupByKey().collect()
 
-for i in df_test_group:
-    print("Age: ", i[0], " | Names: ", [k for k in i[1]])
+for i in df_salary:
+    print("Salary: ", i[0], "| Names: ", [i for i in i[1]])
+
+# Find avg of column
+sum_df = df_test.select("Salary per year")
+avg_sal = sum_df.select(avg(col("Salary per year"))).collect()[0][0]
+print("Average salary: ", ceil(avg_sal))
+
+for i in df_age_salary:
+    print("Age: ", i[0], "| Salary: ", [i for i in i[1]])
+
 
 # withColumn - add new column with changes
 #
