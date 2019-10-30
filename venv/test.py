@@ -155,19 +155,19 @@ for i in z.collect():
 # New DF
 df_test = sql.createDataFrame(
     [("20", "Nick", 10000), ("22", "Roman", 7000), ("22", "Marta", 4000), ("18", "Nastya", 3000), ("20", "Inna", 4000), ("20", "Ira", 7000), ("20", "Petya", 4000), ("22", "Ihor", 10000), ("18", "Zoya", 3000)],
-    ["age", "Name", "Salary per year"])
+    ["age", "name", "salary_per_year"])
 
 print("DF_TEST")
 df_test.show()
-df_salary = df_test.select("Salary per year", "Name").rdd.groupByKey().collect()
-df_age_salary = df_test.select("age", "Salary per year").rdd.groupByKey().collect()
+df_salary = df_test.select("salary_per_year", "name").rdd.groupByKey().collect()
+df_age_salary = df_test.select("age", "salary_per_year").rdd.groupByKey().collect()
 
 for i in df_salary:
     print("Salary: ", i[0], "| Names: ", [i for i in i[1]])
 
 # Find avg of column
-sum_df = df_test.select("Salary per year")
-avg_sal = sum_df.select(avg(col("Salary per year"))).collect()[0][0]
+sum_df = df_test.select("salary_per_year")
+avg_sal = sum_df.select(avg(col("salary_per_year"))).collect()[0][0]
 print("Average salary: ", ceil(avg_sal))
 
 for i in df_age_salary:
@@ -175,13 +175,18 @@ for i in df_age_salary:
 
 # try to use map and filter methods
 print("Persons with salary < 4000 dollars per year")
-map_df = df_test.select("Name", "Salary per year").filter(col("Salary per year") <= 4000)
+map_df = df_test.select("name", "salary_per_year").filter(col("salary_per_year") <= 4000)
 map_df.show()
 print("And I need to raise salary at 400 dollars...")
 print("New salary:")
-new_salary_df = map_df.withColumn("New salary", col("Salary per year")+400)
+new_salary_df = map_df.withColumn("new_salary", col("salary_per_year")+400)
 new_salary_df.show()
-new_salary_df.drop(col("Salary per year")).show()
+new_salary_df = new_salary_df.drop(col("salary_per_year"))
+
+ta = new_salary_df.alias("sal_df")
+tb = df_test.alias("df_test_sal")
+inner_join = tb.join(ta, ta.name == tb.name)
+inner_join.withColumn("raise", col("new_salary")-col("salary_per_year")).show()
 
 
 
