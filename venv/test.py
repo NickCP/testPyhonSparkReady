@@ -1,3 +1,5 @@
+# In this code i demonstrate my skills
+# 5 days, SoftServe
 from pyspark import SparkConf, SparkContext
 from pyspark.sql import *
 from pyspark.sql.types import StructType
@@ -5,11 +7,10 @@ from pyspark.sql.functions import *
 import random, string
 from math import ceil
 
+# Configuration
 conf = SparkConf().set('spark.driver.host', '127.0.0.1')
 sc = SparkContext("local", "App Name", conf=conf)
 sql = SQLContext(sc)
-
-# Create Example Data - Departments and Employees
 
 # Create the Departments
 department1 = Row(id='123456', name='Computer Science')
@@ -31,20 +32,16 @@ departmentWithEmployees2 = Row(department=department2, employees=[employee3, emp
 departmentWithEmployees3 = Row(department=department3, employees=[employee5, employee4])
 departmentWithEmployees4 = Row(department=department4, employees=[employee2, employee3])
 
-print(department1)
-print(employee2)
-print(departmentWithEmployees1.employees[0].email)
-
+# Create DataFrame with departments and employees
 departmentsWithEmployeesSeq1 = [departmentWithEmployees1, departmentWithEmployees2]
 df1 = sql.createDataFrame(departmentsWithEmployeesSeq1)
 
 df1.show(4)
 departmentsWithEmployeesSeq2 = [departmentWithEmployees3, departmentWithEmployees4]
 df2 = sql.createDataFrame(departmentsWithEmployeesSeq2)
-
 df2.show(4, truncate=True)
 
-# my own dataframes
+# Create two DataFrames for demonstration sorting, trim, join etc.
 df3 = sql.createDataFrame(
     [("48", "Nick    ",), ("48", "Roman     ",), ("18", "Marta  ",), ("23", "Nastya  ",), ("34", None,)],
     ["age", "Name"])
@@ -52,7 +49,7 @@ df5 = sql.createDataFrame(
     [("48", "Nick    ",), ("20", "Roman     ",), ("19", "Marta  ",), ("25", "Nastya  ",), ("34", "Petrenko",)],
     ["age", "Name"])
 
-# sorting dataframes with adding new column
+# sorting dataframes raise=false
 print("___SORTED ASCENDING=FALSE_______")
 df3.orderBy("age", ascending=False).show()
 print("___FILL EMPTY VALUES___")
@@ -65,11 +62,10 @@ df3.withColumn("new name", regexp_replace(col("Name"), "Nick", "Kolya")).show()
 print("_________CHANGE AGE ___________")
 df3.withColumn("new age", regexp_replace(col("Age"), "48", "20")).show()
 print("_________ PRINT TEXT FROM TXT ____________")
-# load data from txt file
+# load data from txt file and csv
 df4 = sc.textFile("C://Users/mchub/Desktop/fie.txt")
 csvDf = sql.read.csv("C://Users/mchub/Desktop/file.csv", header=True, inferSchema=True)
 listt = df4.collect()
-
 for i in listt:
     print(i)
 print("------------")
@@ -77,8 +73,7 @@ print("------------")
 print("__________DELETE WHITESPACES_________")
 new_df3 = df3.withColumn("name2", trim(col("Name")))
 
-
-# comparison two datasets
+# Comparison two datasets
 print("Dataset 5:")
 df5.show()
 print("Dataset 3:")
@@ -86,7 +81,7 @@ df3.show()
 print("Exceptions:")
 df3.exceptAll(df5).show()
 
-# I join two tables
+# Join two tables
 ta = df3.alias("ta")
 tb = df5.alias("tb")
 inner_join = ta.join(tb, ta.age == tb.age)
@@ -94,6 +89,7 @@ inner_join.show()
 print("__________LEFT JOIN_________")
 left_join = ta.join(tb, ta.age == tb.age, how='left')
 left_join.show()
+# Use filters
 print("____________WITH FILTER__________#1")
 left_join.filter(col('tb.name').isNull()).show()
 print("____________WITH FILTER__________#2")
@@ -102,21 +98,23 @@ left_join.filter(col('tb.name').isNotNull()).show()
 print("_______LOWER_______")
 df3.withColumn("lower", lower(col("Name"))).show()
 
-# Bad idea, it doesn`t work :(
+# Bad idea, it doesn`t work OK
 print("______TEST CSVDF_________")
 csvDf.show()
 csvDf.printSchema()
 
-# lists of values to add in dataframe
+# Lists of values to add in dataframe
 number_list = [i for i in range(1, 900)]
 time_list = [i for i in range(1, 1800, 2)]
 
-# random string
+# Random string to add in DataFrame
+
 
 def randomword(length):
     letters = string.ascii_lowercase
     return ''.join(random.choice(letters) for i in range(length))
 word_list = [randomword(5) for i in range(1, 900)]
+
 # new dataframe with values from lists
 big_df = sql.createDataFrame(zip(number_list, time_list, word_list), ["id", "Time", "Name"])
 number_of_rows = big_df.count()
@@ -130,11 +128,14 @@ except:
     print("Oooops, error")
 else:
     print("Success! File is saving on desktop. Path: C://Users/mchub/Desktop/bigdf.csv")
+
+# Drop column
 print("Demonstrate how DROP is working:")
 df3.drop(col("Name")).show()
 print("____ MAX VALUE IN COLUMN____")
 max_value = new_big_df.agg({"Time": "max"}).collect()[0]
 print(max_value)
+
 # Statistical and Mathematical Functions
 new_big_df.describe('id', 'Time', 'Name').show()
 
@@ -143,35 +144,32 @@ new_big_df.orderBy("Name", ascending=True).show(30)
 print("______SHOW ONLY UNIQUE VALUES______")
 new_big_df.distinct().show(200)
 
-
 print("Group by key demonstrate:")
 k = df3.withColumn("Name_trim", trim(col("Name")))
 k = k.drop(col("Name"))
 z = k.rdd.groupByKey()
-
 for i in z.collect():
     print(i[0], [v for v in i[1]])  # 1
 
-# New DF
+# New DF for test operations
 df_test = sql.createDataFrame(
     [("20", "Nick", 10000), ("22", "Roman", 7000), ("22", "Marta", 4000), ("18", "Nastya", 3000), ("20", "Inna", 4000), ("20", "Ira", 7000), ("20", "Petya", 4000), ("22", "Ihor", 10000), ("18", "Zoya", 3000)],
     ["age", "name", "salary_per_year"])
 
+# Group by key to show salary based on age/to show person name based on salary
 print("DF_TEST")
 df_test.show()
 df_salary = df_test.select("salary_per_year", "name").rdd.groupByKey().collect()
 df_age_salary = df_test.select("age", "salary_per_year").rdd.groupByKey().collect()
-
 for i in df_salary:
     print("Salary: ", i[0], "| Names: ", [i for i in i[1]])
+for i in df_age_salary:
+    print("Age: ", i[0], "| Salary: ", [i for i in i[1]])
 
-# Find avg of column
+# Find avg of salaries
 sum_df = df_test.select("salary_per_year")
 avg_sal = sum_df.select(avg(col("salary_per_year"))).collect()[0][0]
 print("Average salary: ", ceil(avg_sal))
-
-for i in df_age_salary:
-    print("Age: ", i[0], "| Salary: ", [i for i in i[1]])
 
 # try to use map and filter methods
 print("Persons with salary < 4000 dollars per year")
@@ -187,15 +185,6 @@ ta = new_salary_df.alias("sal_df")
 tb = df_test.alias("df_test_sal")
 inner_join = tb.join(ta, ta.name == tb.name)
 inner_join.withColumn("raise", col("new_salary")-col("salary_per_year")).show()
-
-
-
-
-
-
-#for i in map_df:
-#    print("New salary:", i)
-
 
 
 # withColumn - add new column with changes
