@@ -152,9 +152,9 @@ z = k.rdd.groupByKey()
 for i in z.collect():
     print(i[0], [v for v in i[1]])  # 1
 
-
+# New DF
 df_test = sql.createDataFrame(
-    [("20", "Nick", "10000"), ("22", "Roman", "7000"), ("22", "Marta", "4000"), ("18", "Nastya", "3000"), ("20", "Inna", "4000"), ("20", "Ira", "7000"), ("20", "Petya", "4000"), ("22", "Ihor", "10000"), ("18", "Zoya", "3000")],
+    [("20", "Nick", 10000), ("22", "Roman", 7000), ("22", "Marta", 4000), ("18", "Nastya", 3000), ("20", "Inna", 4000), ("20", "Ira", 7000), ("20", "Petya", 4000), ("22", "Ihor", 10000), ("18", "Zoya", 3000)],
     ["age", "Name", "Salary per year"])
 
 print("DF_TEST")
@@ -172,6 +172,25 @@ print("Average salary: ", ceil(avg_sal))
 
 for i in df_age_salary:
     print("Age: ", i[0], "| Salary: ", [i for i in i[1]])
+
+# try to use map and filter methods
+print("Persons with salary < 4000 dollars per year")
+map_df = df_test.select("Name", "Salary per year").filter(col("Salary per year") <= 4000)
+map_df.show()
+print("And I need to raise salary at 400 dollars...")
+print("New salary:")
+new_salary_df = map_df.withColumn("New salary", col("Salary per year")+400)
+new_salary_df.show()
+new_salary_df.drop(col("Salary per year")).show()
+
+
+
+
+
+
+#for i in map_df:
+#    print("New salary:", i)
+
 
 
 # withColumn - add new column with changes
