@@ -1,5 +1,5 @@
 # In this code i demonstrate my skills
-# 5 days, SoftServe
+# 5 days
 from pyspark import SparkConf, SparkContext
 from pyspark.sql import *
 from pyspark.sql.types import StructType
