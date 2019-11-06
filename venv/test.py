@@ -6,11 +6,83 @@ from pyspark.sql.types import StructType
 from pyspark.sql.functions import *
 import random, string
 from math import ceil
+import pandas as pd
+from pyspark.sql.functions import lit
 
 # Configuration
 conf = SparkConf().set('spark.driver.host', '127.0.0.1')
 sc = SparkContext("local", "App Name", conf=conf)
 sql = SQLContext(sc)
+
+
+# my first task
+data_period = sql.createDataFrame(
+    [("1", "2019-01-01", "2019-12-31"), ("2", "2019-03-01", "2019-03-31"), ("3", "2019-01-01", "2019-03-31"),
+     ("4", "2015-01-01", "2019-08-31"), ("5", "2018-01-01", "2019-12-31"), ("6", "2019-01-01", "2019-12-31"),
+     ("7", "2020-01-01", "2020-03-31"), ("8", "2020-01-01", "2020-03-31"), ("9", "2020-01-01", "2020-03-31"),
+     ("10", "2019-01-01", "2019-12-31"), ], ["trx", "earned_start_date", "earned_end_date"])
+
+z = data_period.head(2)
+print("ZZZZZ ",z[0][1])
+
+
+data_period.show()
+# the list if values from earned_start_date
+list_of_earned_start_date = list(data_period.select("earned_start_date").collect())
+
+
+min_earned_start_date = data_period.agg({"earned_start_date": "min"}).collect()[0][0]
+max_earned_start_date = data_period.agg({"earned_start_date": "max"}).collect()[0][0]
+max_earned_start_date_row = data_period.agg({"earned_start_date": "max"}).collect()[0]
+min_earned_end_date = data_period.agg({"earned_end_date": "min"}).collect()[0][0]
+max_earned_end_date = data_period.agg({"earned_END_date": "max"}).collect()[0][0]
+
+# the list if values from earned_start_date
+list_of_earned_start_date = list(data_period.select("earned_start_date").collect())
+list_of_earned_end_date = list(data_period.select("earned_end_date").collect())
+
+len_of_list_start = len(list_of_earned_start_date)
+len_of_list_end = len(list_of_earned_end_date)
+
+value_start = list_of_earned_start_date
+value_end = list_of_earned_end_date
+
+list_of_earned_end_date_filter = []
+list_of_earned_start_date_filter = []
+print("__________________________")
+
+
+if max_earned_start_date > min_earned_end_date:
+    for i in range(0, len_of_list_start):
+        if value_start[i][0] != max_earned_start_date:
+            list_of_earned_start_date_filter.append(value_start[i][0])
+            list_of_earned_end_date_filter.append(value_end[i][0])
+
+list_of_earned_start_date_filter.sort(reverse=True)
+new_max_value_start = list_of_earned_start_date_filter[0]
+list_of_earned_end_date_filter.sort(reverse=True)
+new_max_value_end = list_of_earned_end_date_filter[0]
+max_period = min_earned_start_date + " - " + new_max_value_end
+exception_max_peroid = max_earned_start_date + " - " + max_earned_end_date
+withincolumn_list = []
+for i in range(0, len_of_list_start):
+    if value_end[i][0] < max_earned_start_date:
+        withincolumn_list.append(max_period)
+    else:
+        withincolumn_list.append(exception_max_peroid)
+temporary_data = sql.createDataFrame([(l,) for l in withincolumn_list], ['max_period'])
+data_period = data_period.withColumn("idx", monotonically_increasing_id())
+temporary_data = temporary_data.withColumn("idx", monotonically_increasing_id())
+
+final_data_period = data_period.join(temporary_data, data_period.idx == temporary_data.idx).drop("idx").orderBy("trx", ascending=True)
+final_data_period.show()
+
+
+print("min_earned_START_date:", min_earned_start_date)
+print("max_earned_START_date:", max_earned_start_date)
+print("min_earned_END_date:", min_earned_end_date)
+print("max_earned_END_date:", max_earned_end_date)
+
 
 # Create the Departments
 department1 = Row(id='123456', name='Computer Science')
